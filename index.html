@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Consultora Natura - Protótipo Interativo</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Animação personalizada para o alerta piscando de dívida */
+    @keyframes piscar-alerta {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.88; transform: scale(1.02); }
+    }
+    .animate-piscar {
+      animation: piscar-alerta 1.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen flex flex-col justify-between">
+
+  <!-- ========================================== -->
+  <!-- 1. TELA DE LOGIN (Acesso Livre)            -->
+  <!-- ========================================== -->
+  <section id="screen-login" class="flex-1 flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
+      <div class="text-center mb-6">
+        <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Espaço da Consultora</span>
+        <h1 class="text-2xl font-black text-slate-900 mt-2">Bem-vinda!</h1>
+        <p class="text-sm text-slate-500">Acesse com seu WhatsApp e senha para gerenciar suas vendas e cobranças.</p>
+      </div>
+
+      <form onsubmit="navigateTo('screen-admin'); return false;" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">WhatsApp</label>
+          <input type="tel" placeholder="(11) 99999-9999" value="(11) 98765-4321" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:outline-none transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Senha</label>
+          <input type="password" value="123456" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:outline-none transition text-sm">
+        </div>
+        <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-orange-500/20 transition transform active:scale-95">
+          Entrar no Painel
+        </button>
+      </form>
+      <p class="text-xs text-center text-slate-400 mt-6">Modo de Demonstração: Qualquer login dará acesso ao painel.</p>
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 2. PAINEL ADMIN DA CONSULTORA              -->
+  <!-- ========================================== -->
+  <section id="screen-admin" class="hidden flex-1 flex flex-col">
+    <!-- Navbar Topo -->
+    <header class="bg-white border-b border-slate-200 text-slate-900 p-4 shadow-sm flex justify-between items-center sticky top-0 z-10">
+      <div class="flex items-center space-x-3">
+        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80" alt="Foto da Consultora" class="w-10 h-10 rounded-full object-cover border-2 border-amber-500 shadow-sm">
+        <div>
+          <span class="font-black text-sm block leading-tight text-slate-900">Maria Silva</span>
+          <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Consultora VIP Natura</span>
+        </div>
+      </div>
+      <button onclick="navigateTo('screen-login')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg border border-slate-300 transition">Sair</button>
+    </header>
+
+    <!-- Conteúdo Principal do Admin -->
+    <main class="max-w-4xl w-full mx-auto p-4 flex-1 space-y-6">
+      <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 text-white shadow-md">
+        <h2 class="text-2xl font-black">Painel de Gestão</h2>
+        <p class="text-amber-100 text-sm">Selecione uma opção abaixo para gerenciar seu catálogo, cadastrar clientes ou criar uma oferta com cobrança.</p>
+      </div>
+
+      <!-- Menu Principal em Cards/Botões -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Botão Catálogos -->
+        <button onclick="switchAdminTab('tab-catalogos')" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-amber-500 transition text-left group">
+          <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xl mb-3 group-hover:bg-amber-500 group-hover:text-white transition">📖</div>
+          <h3 class="font-bold text-slate-800 text-sm">Catálogos</h3>
+          <p class="text-[11px] text-slate-500 mt-1">Estoque e produtos</p>
+        </button>
+
+        <!-- Botão Clientes -->
+        <button onclick="switchAdminTab('tab-clientes')" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-amber-500 transition text-left group">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xl mb-3 group-hover:bg-blue-500 group-hover:text-white transition">👥</div>
+          <h3 class="font-bold text-slate-800 text-sm">Clientes</h3>
+          <p class="text-[11px] text-slate-500 mt-1">Cadastros e contatos</p>
+        </button>
+
+        <!-- Botão Devedores -->
+        <button onclick="switchAdminTab('tab-devedores')" class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-amber-500 transition text-left group">
+          <div class="w-10 h-10 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-xl mb-3 group-hover:bg-rose-500 group-hover:text-white transition">⚠️</div>
+          <h3 class="font-bold text-slate-800 text-sm">Devedores</h3>
+          <p class="text-[11px] text-slate-500 mt-1">Gestão de fiados</p>
+        </button>
+
+        <!-- Botão Criar Oferta + Cobrança (Abre a Landing Page) -->
+        <button onclick="navigateTo('screen-landing')" class="bg-gradient-to-br from-purple-600 to-indigo-600 p-5 rounded-xl text-white shadow-md hover:shadow-lg transition text-left group col-span-2 md:col-span-1">
+          <div class="w-10 h-10 rounded-lg bg-white/20 text-white flex items-center justify-center font-bold text-xl mb-3">🚀</div>
+          <h3 class="font-bold text-sm">Landing Page</h3>
+          <p class="text-[11px] text-purple-200 mt-1">Gerar Oferta + Dívida</p>
+        </button>
+      </div>
+
+      <!-- ABA CATÁLOGOS -->
+      <div id="tab-catalogos" class="admin-tab bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <div>
+          <h3 class="font-bold text-lg text-slate-800">Produtos do Catálogo & Pronta-Entrega</h3>
+          <p class="text-xs text-slate-500">Clique em "Compartilhar com Cliente" para abrir a Landing Page do produto.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <!-- Produto 1 no Catálogo -->
+          <div class="border border-slate-200 rounded-xl p-4 flex gap-4 bg-slate-50/50 items-center">
+            <div class="w-20 h-24 bg-white rounded-lg p-1 border border-slate-200 flex items-center justify-center shrink-0">
+              <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=400&q=80" alt="Essencial Natura" class="h-full w-full object-contain">
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="text-[10px] font-bold text-amber-600 uppercase">Perfumaria</span>
+              <h4 class="font-bold text-sm text-slate-800 truncate">Natura Essencial Exclusivo 100ml</h4>
+              <p class="text-xs font-black text-slate-900 mt-1">R$ 119,90 <span class="text-[10px] text-slate-400 font-normal line-through">R$ 179,90</span></p>
+              <button onclick="navigateTo('screen-landing')" class="mt-2 w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs py-1.5 px-2 rounded-lg transition">
+                Compartilhar com Cliente
+              </button>
+            </div>
+          </div>
+
+          <!-- Produto 2 no Catálogo -->
+          <div class="border border-slate-200 rounded-xl p-4 flex gap-4 bg-slate-50/50 items-center">
+            <div class="w-20 h-24 bg-white rounded-lg p-1 border border-slate-200 flex items-center justify-center shrink-0">
+              <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=400&q=80" alt="Hidratante Tododia" class="h-full w-full object-contain">
+            </div>
+            <div class="flex-1 min-w-0">
+              <span class="text-[10px] font-bold text-emerald-600 uppercase">Corpo e Banho</span>
+              <h4 class="font-bold text-sm text-slate-800 truncate">Creme Tododia Algodão 400ml</h4>
+              <p class="text-xs font-black text-slate-900 mt-1">R$ 49,90 <span class="text-[10px] text-slate-400 font-normal line-through">R$ 65,90</span></p>
+              <button onclick="navigateTo('screen-landing')" class="mt-2 w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs py-1.5 px-2 rounded-lg transition">
+                Compartilhar com Cliente
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA CLIENTES -->
+      <div id="tab-clientes" class="admin-tab hidden bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <h3 class="font-bold text-lg text-slate-800">Base de Clientes</h3>
+            <p class="text-xs text-slate-500">Cadastre novos clientes ou veja a lista existente.</p>
+          </div>
+          <button onclick="toggleCadastrarCliente()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3 py-2 rounded-lg transition flex items-center gap-1 shadow-sm">
+            <span>+</span> Novo Cliente
+          </button>
+        </div>
+
+        <!-- FORMULÁRIO DE CADASTRO -->
+        <div id="form-novo-cliente" class="hidden mb-6 p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+          <h4 class="font-bold text-xs text-slate-700 uppercase tracking-wider">Cadastrar Nova Cliente</h4>
+          <form onsubmit="adicionarCliente(); return false;" class="space-y-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Nome Completo</label>
+                <input id="cliente-nome" type="text" placeholder="Ex: Maria Souza" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">WhatsApp</label>
+                <input id="cliente-whats" type="tel" placeholder="(11) 98888-7777" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Status Inicial</label>
+              <select id="cliente-status" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <option value="Sem Pendências">Sem Pendências (Cliente Ativa)</option>
+                <option value="Possui Pendência">Possui Pendência / Devedora</option>
+              </select>
+            </div>
+            <div class="flex justify-end gap-2 pt-1">
+              <button type="button" onclick="toggleCadastrarCliente()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs px-3 py-1.5 rounded-lg transition">Cancelar</button>
+              <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-1.5 rounded-lg transition">Salvar Cliente</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- LISTA DE CLIENTES -->
+        <ul id="lista-clientes" class="divide-y divide-slate-100 text-sm">
+          <li class="py-3 flex justify-between items-center">
+            <div>
+              <span class="font-bold block text-slate-800">Dona Maria Silva</span>
+              <span class="text-xs text-slate-400">(11) 99887-6655</span>
+            </div>
+            <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2.5 py-1 rounded-full">Sem Pendências</span>
+          </li>
+          <li class="py-3 flex justify-between items-center">
+            <div>
+              <span class="font-bold block text-slate-800">Ana Paula Oliveira</span>
+              <span class="text-xs text-slate-400">(11) 98765-4321</span>
+            </div>
+            <span class="text-xs bg-rose-100 text-rose-800 font-semibold px-2.5 py-1 rounded-full">Devendo R$ 60,00</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- ABA DEVEDORES -->
+      <div id="tab-devedores" class="admin-tab hidden bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <h3 class="font-bold text-lg text-rose-700 mb-2">Painel de Clientes Devedores</h3>
+        <p class="text-xs text-slate-500">Agendamento de vencimentos e chaves Pix atreladas.</p>
+        <div class="mt-4 bg-rose-50 p-4 rounded-lg border border-rose-200 text-sm text-rose-900">
+          <strong>Ana Paula Oliveira:</strong> Caixa de Sabonetes Tododia — Vencimento: 25/Oct. <br>
+          <span class="text-xs text-rose-700">Valor em Aberto: R$ 60,00 | Chave Pix: (11) 98765-4321</span>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 3. LANDING PAGE DO CLIENTE FINAL (VIP)    -->
+  <!-- ========================================== -->
+  <section id="screen-landing" class="hidden flex-1 bg-slate-100 min-h-screen text-slate-800 p-4">
+    <div class="max-w-md mx-auto space-y-4">
+      
+      <!-- Topo da Landing Page com Perfil da Consultora -->
+      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80" alt="Foto da Consultora" class="w-10 h-10 rounded-full object-cover border-2 border-amber-500">
+          <div>
+            <span class="text-[10px] text-amber-600 font-bold uppercase tracking-wider block">Sua Consultora Natura</span>
+            <h2 class="text-sm font-bold text-slate-900">Maria Silva</h2>
+          </div>
+        </div>
+        <button onclick="navigateTo('screen-admin')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-300 font-medium transition">
+          ← Voltar
+        </button>
+      </div>
+
+      <!-- CARD 1: ALERTA PISCANDO DE DÍVIDA PENDENTE -->
+      <div class="animate-piscar bg-gradient-to-r from-rose-600 to-red-600 border-2 border-amber-300 p-4 rounded-2xl shadow-xl text-white">
+        <div class="flex items-start space-x-3">
+          <div class="text-2xl">⚡</div>
+          <div class="flex-1">
+            <h3 class="font-black text-xs uppercase tracking-wide text-amber-200">Aviso de Pendência de Cadastro</h3>
+            <p class="text-xs mt-1 text-rose-100">Identificamos uma parcela pendente do seu pedido anterior:</p>
+
+            <div class="mt-3 bg-black/30 p-3 rounded-xl flex items-center space-x-3 border border-white/10">
+              <div class="w-14 h-14 bg-white rounded-lg p-1 shrink-0 flex items-center justify-center">
+                <img src="https://images.unsplash.com/photo-1608248597260-6521e8e19036?auto=format&fit=crop&w=200&q=80" alt="Produto Dívida" class="h-full w-full object-contain">
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="block font-bold text-xs text-white truncate">Kit Sabonetes Natura Tododia</span>
+                <span class="text-[11px] text-rose-200 block">Vencimento: 25/10</span>
+                <span class="text-sm font-black text-amber-300">R$ 60,00</span>
+              </div>
+            </div>
+
+            <button onclick="alert('Chave Pix da consultora copiada com sucesso!')" class="mt-3 w-full bg-amber-400 hover:bg-amber-300 text-slate-900 font-black text-xs py-2.5 rounded-lg shadow uppercase tracking-wider transition">
+              Copiar Chave Pix & Quitar Agora
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: PRODUTO EM PROMOÇÃO DETALHADO -->
+      <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-md">
+        <div class="relative bg-slate-50 p-4 flex justify-center border-b border-slate-100">
+          <div class="w-full h-56 flex items-center justify-center">
+            <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=600&q=80" alt="Perfume Natura Essencial" class="max-h-full max-w-full object-contain">
+          </div>
+          <span class="absolute top-3 right-3 bg-amber-500 text-slate-900 text-xs font-black px-2.5 py-1 rounded-full uppercase shadow">30% OFF Hoje</span>
+        </div>
+        
+        <div class="p-5 space-y-3">
+          <div>
+            <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Lançamento / Pronta-Entrega</span>
+            <h3 class="text-lg font-black text-slate-900 leading-snug">Natura Essencial Exclusivo Feminino 100ml</h3>
+            <p class="text-xs text-slate-500 mt-1">Buquê floral intenso com notas de rosa, freésia e magnólia. Enriquecido com a especiaria preciosa do estoraque.</p>
+          </div>
+
+          <div class="flex items-baseline space-x-2 pt-1">
+            <span class="text-2xl font-black text-slate-900">R$ 119,90</span>
+            <span class="text-xs text-slate-400 line-through">R$ 179,90</span>
+          </div>
+
+          <!-- Mimo/Gamificação -->
+          <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
+            💡 <strong>Mimo Especial:</strong> Quite sua parcela de R$ 60,00 junto com este pedido e ganhe 1 Amostra de 10ml no seu pacote!
+          </div>
+
+          <button onclick="alert('Pedido enviado diretamente para o WhatsApp da consultora!')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-xl shadow transition uppercase tracking-wider">
+            Pedir no WhatsApp da Maria
+          </button>
+        </div>
+      </div>
+
+      <!-- CHAT EM TEMPO REAL INTEGRADO -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 space-y-3 shadow-sm">
+        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+          <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Chat Direto com a Consultora
+        </h4>
+
+        <div id="chat-box" class="h-32 overflow-y-auto bg-slate-50 p-3 rounded-xl space-y-2 text-xs border border-slate-200">
+          <div class="bg-white p-2.5 rounded-lg max-w-[85%] text-slate-700 border border-slate-200 shadow-sm">
+            <span class="block text-[10px] font-bold text-amber-600 mb-0.5">Maria (Consultora)</span>
+            Oi Ana! Montei essa página com a promoção do Essencial e anexei o Pix da sua parcela anterior. Qualquer dúvida me chama aqui!
+          </div>
+        </div>
+
+        <form onsubmit="sendMessage(); return false;" class="flex gap-2">
+          <input id="chat-input" type="text" placeholder="Digite sua mensagem..." class="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-amber-500">
+          <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-4 py-2 rounded-lg text-xs transition">
+            Enviar
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Lógica JavaScript para navegação e interações -->
+  <script>
+    // Alternar telas principais
+    function navigateTo(screenId) {
+      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(screenId).classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+
+    // Alternar abas internas do Admin
+    function switchAdminTab(tabId) {
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+    }
+
+    // Mostrar/Esconder Formulário de Cadastro de Cliente
+    function toggleCadastrarCliente() {
+      const form = document.getElementById('form-novo-cliente');
+      form.classList.toggle('hidden');
+    }
+
+    // Adicionar novo cliente dinamicamente na lista
+    function adicionarCliente() {
+      const nome = document.getElementById('cliente-nome').value;
+      const whats = document.getElementById('cliente-whats').value;
+      const status = document.getElementById('cliente-status').value;
+      const lista = document.getElementById('lista-clientes');
+
+      const isDevendor = status.includes('Pendência');
+      const badgeClass = isDevendor ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800';
+
+      const li = document.createElement('li');
+      li.className = 'py-3 flex justify-between items-center border-t border-slate-100';
+      li.innerHTML = `
+        <div>
+          <span class="font-bold block text-slate-800">${nome}</span>
+          <span class="text-xs text-slate-400">${whats}</span>
+        </div>
+        <span class="text-xs ${badgeClass} font-semibold px-2.5 py-1 rounded-full">${status}</span>
+      `;
+
+      lista.prepend(li); // Adiciona no topo da lista
+
+      // Limpar formulário e fechar
+      document.getElementById('cliente-nome').value = '';
+      document.getElementById('cliente-whats').value = '';
+      toggleCadastrarCliente();
+    }
+
+    // Simulação do Chat
+    function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const box = document.getElementById('chat-box');
+      if (input.value.trim() === '') return;
+
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'bg-amber-100 text-amber-900 border border-amber-200 p-2.5 rounded-lg max-w-[85%] ml-auto text-right shadow-sm';
+      msgDiv.innerHTML = `<span class="block text-[10px] font-bold text-amber-700 mb-0.5">Você</span>${input.value}`;
+      
+      box.appendChild(msgDiv);
+      input.value = '';
+      box.scrollTop = box.scrollHeight;
+    }
+  </script>
+</body>
+</html>
